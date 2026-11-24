@@ -23,6 +23,60 @@ class LearnablePositionalEncoding(nn.Module):
         return x + self.pe[:, :x.size(1)]
 
 
+#class LearnableModalityAwareEmbedder(nn.Module):
+  
+   # def __init__(self, patch_dim: int = 768, vocab_size: int = 8192,
+   #              d_model: int = 512, d_inter: int = 512,
+   #              max_seq_len: int = 512, num_latents: int = 64,
+   #              num_heads: int = 1, dropout: float = 0.1):
+   #     super().__init__()
+   #     self.num_latents = num_latents
+
+   #     self.img_proj_1 = nn.Sequential(
+   #         nn.LayerNorm(patch_dim),
+   #         nn.Linear(patch_dim, d_inter),
+   #     )
+   #     self.txt_proj_1 = nn.Embedding(vocab_size, d_inter)
+
+   #     self.shared_proj_2 = nn.Sequential(
+   #         nn.Linear(d_inter, d_model),
+   #         nn.LayerNorm(d_model),
+   #     )
+   #     self.content_pos_enc = LearnablePositionalEncoding(d_model, max_len=max_seq_len)
+
+   #     std = 1.0 / math.sqrt(d_model)
+   #     self.image_tokens = nn.Parameter(torch.empty(1, num_latents, d_model))
+   #     self.text_tokens  = nn.Parameter(torch.empty(1, num_latents, d_model))
+   #     nn.init.trunc_normal_(self.image_tokens, mean=0.0, std=std, a=-2 * std, b=2 * std)
+   #     nn.init.trunc_normal_(self.text_tokens,  mean=0.0, std=std, a=-2 * std, b=2 * std)
+
+   #     self.attention    = nn.MultiheadAttention(
+   #         embed_dim=d_model, num_heads=num_heads,
+   #         dropout=dropout, batch_first=True,
+   #     )
+   #     self.attn_dropout = nn.Dropout(dropout)
+   #     self._init_weights()
+
+   # def _init_weights(self):
+   #     for m in self.modules():
+   #         if isinstance(m, nn.Linear):
+   #             nn.init.xavier_uniform_(m.weight)
+   #             if m.bias is not None:
+   #                 nn.init.constant_(m.bias, 0)
+   #         elif isinstance(m, nn.Embedding):
+   #             nn.init.normal_(m.weight, mean=0.0, std=0.02)
+
+   # def forward(self, X: torch.Tensor, modality: str) -> torch.Tensor:
+   #     X_proj = self.img_proj_1(X) if modality == "image" else self.txt_proj_1(X)
+   #     X_proj = self.shared_proj_2(X_proj)
+   #     X_proj = self.content_pos_enc(X_proj)
+
+   #     B   = X_proj.size(0)
+   #     Bmi = (self.image_tokens if modality == "image" else self.text_tokens
+   #            ).expand(B, -1, -1)
+
+   #     attn_out, _ = self.attention(query=X_proj, key=Bmi, value=Bmi)
+   #     return self.attn_dropout(attn_out) + X_proj
 
 class ModalityAwareBasisEmbedder(nn.Module):
     _MOD2IDX = {"image": 0, "text": 1}
